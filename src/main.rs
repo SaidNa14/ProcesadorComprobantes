@@ -4,6 +4,7 @@ use std::{fs, path::Path};
 use crate::factura_model::Factura;
 
 pub mod factura_model;
+pub mod formateador_fecha;
 fn main() -> Result<(), Error> {
     fn cargar_facturas<P: AsRef<Path>>(ruta_dir: P) -> Result<Vec<Factura>, Error> {
         let mut coleccion = Vec::new();
