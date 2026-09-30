@@ -3,7 +3,7 @@ pub mod info_adicional;
 pub mod info_factura;
 pub mod info_tributaria;
 
-pub use detalles::{DetAdicional, Detalle, DetallesAdicionales, Impuesto, Impuestos, Detalles};
+pub use detalles::{DetAdicional, Detalle, Detalles, DetallesAdicionales, Impuesto, Impuestos};
 pub use info_adicional::{CampoAdicional, InfoAdicional};
 pub use info_factura::{InfoFactura, Pago, Pagos, TotalConImpuestos, TotalImpuesto};
 pub use info_tributaria::InfoTributaria;
@@ -33,3 +33,9 @@ impl IntoIterator for Facturas {
         self.facturas.into_iter()
     }
 }
+
+/*Bueno, este comentario es mas que nada para saber algo que ocurrio
+* surgio un bug que evitaba que datos de tipo Decimal sean deserializados
+* segun revisé se solucionaba fácil usando with = "rust_decimal::serde::str"
+* entonces ahi si dejo de darme lios.
+* */

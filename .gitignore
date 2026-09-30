@@ -1,3 +1,4 @@
 /target
 .aider*
-./src/facturas/
+/src/facturas/
+repomix-output.xml
