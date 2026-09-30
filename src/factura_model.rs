@@ -11,6 +11,9 @@ pub struct Factura {
     pub info_tributaria: InfoTributaria,
     #[serde(rename = "infoFactura")]
     pub info_factura: InfoFactura,
+    pub detalles: Detalles,
+    #[serde(rename = "infoAdicional")]
+    pub info_adicional: InfoAdicional,
 }
 
 #[derive(Deserialize)]
@@ -54,33 +57,41 @@ pub struct InfoFactura {
     pub identificacion_comprador: String,
     #[serde(rename = "direccionComprador")]
     pub direccion_comprador: String,
-    #[serde(rename = "totalSinImpuestos")]
+    #[serde(rename = "totalSinImpuestos", with = "rust_decimal::serde::str")]
     pub total_sin_impuestos: Decimal,
-    #[serde(rename = "totalDescuento")]
+    #[serde(rename = "totalDescuento", with = "rust_decimal::serde::str")]
     pub total_descuento: Decimal,
     #[serde(rename = "totalConImpuestos")]
     pub total_con_impuestos: TotalConImpuestos,
+    #[serde(with = "rust_decimal::serde::str")]
     pub propina: Decimal,
-    #[serde(rename = "importeTotal")]
+    #[serde(rename = "importeTotal", with = "rust_decimal::serde::str")]
     pub importe_total: Decimal,
     #[serde(default)]
     pub moneda: Option<String>,
     pub pagos: Pagos,
 }
+
 #[derive(Deserialize)]
 pub struct TotalConImpuestos {
     #[serde(rename = "totalImpuesto")]
     pub total_impuesto: Vec<TotalImpuesto>,
 }
+
 #[derive(Deserialize)]
 pub struct TotalImpuesto {
     pub codigo: String,
     #[serde(rename = "codigoPorcentaje")]
     pub codigo_porcentaje: String,
-    #[serde(rename = "descuentoAdicional", default)]
+    #[serde(
+        rename = "descuentoAdicional",
+        default,
+        with = "rust_decimal::serde::str_option"
+    )]
     pub descuento_adicional: Option<Decimal>,
-    #[serde(rename = "baseImponible")]
+    #[serde(rename = "baseImponible", with = "rust_decimal::serde::str")]
     pub base_imponible: Decimal,
+    #[serde(with = "rust_decimal::serde::str")]
     pub valor: Decimal,
 }
 
@@ -88,12 +99,14 @@ pub struct TotalImpuesto {
 pub struct Pagos {
     pub pago: Vec<Pago>,
 }
+
 #[derive(Deserialize)]
 pub struct Pago {
     #[serde(rename = "formaPago")]
     pub forma_pago: String,
+    #[serde(with = "rust_decimal::serde::str")]
     pub total: Decimal,
-    pub plazo: u32,
+    pub plazo: String,
     #[serde(rename = "unidadTiempo")]
     pub unidad_tiempo: String,
 }
@@ -110,24 +123,31 @@ pub struct Detalle {
     #[serde(rename = "codigoAuxiliar")]
     pub codigo_auxiliar: String,
     pub descripcion: String,
+    #[serde(with = "rust_decimal::serde::str")]
     pub cantidad: Decimal,
-    #[serde(rename = "precioUnitario")]
+    #[serde(rename = "precioUnitario", with = "rust_decimal::serde::str")]
     pub precio_unitario: Decimal,
+    #[serde(with = "rust_decimal::serde::str")]
     pub descuento: Decimal,
-    #[serde(rename = "precioTotalSinImpuesto")]
+    #[serde(rename = "precioTotalSinImpuesto", with = "rust_decimal::serde::str")]
     pub precio_total_sin_impuestos: Decimal,
-    #[serde(rename = "detallesAdicionales")]
-    pub detalles_adicionales: Option<Vec<DetAdicionales>>,
+    #[serde(rename = "detallesAdicionales", default)]
+    pub detalles_adicionales: Option<DetallesAdicionales>,
     pub impuestos: Impuestos,
 }
 
 #[derive(Deserialize)]
-#[serde(rename = "detAdicional")]
 pub struct DetAdicionales {
     #[serde(rename = "@nombre")]
     pub nombre: String,
     #[serde(rename = "@valor")]
     pub valor: String,
+}
+
+#[derive(Deserialize)]
+pub struct DetallesAdicionales {
+    #[serde(rename = "detAdicional", default)]
+    pub det_adicional: Vec<DetAdicionales>,
 }
 
 #[derive(Deserialize)]
@@ -140,10 +160,26 @@ pub struct Impuesto {
     pub codigo: String,
     #[serde(rename = "codigoPorcentaje")]
     pub codigo_porcentaje: String,
+    #[serde(with = "rust_decimal::serde::str")]
     pub tarifa: Decimal,
-    #[serde(rename = "baseImponible")]
+    #[serde(rename = "baseImponible", with = "rust_decimal::serde::str")]
     pub base_imponible: Decimal,
+    #[serde(with = "rust_decimal::serde::str")]
     pub valor: Decimal,
+}
+
+#[derive(Deserialize)]
+pub struct InfoAdicional {
+    #[serde(rename = "campoAdicional")]
+    pub campo_adicional: Vec<CampoAdicional>,
+}
+
+#[derive(Deserialize)]
+pub struct CampoAdicional {
+    #[serde(rename = "@nombre")]
+    pub nombre: String,
+    #[serde(rename = "$text")]
+    pub text: String,
 }
 
 impl Display for InfoTributaria {
@@ -167,4 +203,3 @@ impl IntoIterator for Facturas {
         self.facturas.into_iter()
     }
 }
-

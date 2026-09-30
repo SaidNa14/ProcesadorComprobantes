@@ -14,10 +14,19 @@ fn main() -> Result<(), Error> {
 
             if ruta.is_file() && ruta.extension().is_some_and(|v| v == "xml") {
                 let contenido = fs::read_to_string(&ruta)?;
-                if let Ok(factura) = quick_xml::de::from_str::<Factura>(&contenido) {
-                    coleccion.push(factura);
-                } else {
-                    println!("Error al deserializar el archivo")
+                let deserializer = &mut quick_xml::de::Deserializer::from_str(&contenido);
+                match serde_path_to_error::deserialize::<_, Factura>(deserializer) {
+                    Ok(factura) => coleccion.push(factura),
+                    Err(e) => {
+                        let ruta_campo = e.path().to_string();
+                        let error_interno = e.into_inner();
+                        println!(
+                            "Error en archivo {:?}\n  campo: {}\n  detalle: {}",
+                            ruta.file_name(),
+                            ruta_campo,
+                            error_interno
+                        );
+                    }
                 }
             }
         }
