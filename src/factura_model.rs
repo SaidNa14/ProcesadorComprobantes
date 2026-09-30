@@ -9,6 +9,8 @@ use std::fmt::Display;
 pub struct Factura {
     #[serde(rename = "infoTributaria")]
     pub info_tributaria: InfoTributaria,
+    #[serde(rename = "infoFactura")]
+    pub info_factura: InfoFactura,
 }
 
 #[derive(Deserialize)]
@@ -57,15 +59,22 @@ pub struct InfoFactura {
     #[serde(rename = "totalDescuento")]
     pub total_descuento: Decimal,
     #[serde(rename = "totalConImpuestos")]
-    pub total_con_impuestos: Decimal,
+    pub total_con_impuestos: TotalConImpuestos,
     pub propina: Decimal,
     #[serde(rename = "importeTotal")]
     pub importe_total: Decimal,
-    pub moneda: String,
+    #[serde(default)]
+    pub moneda: Option<String>,
+    pub pagos: Pagos,
 }
 #[derive(Deserialize)]
-pub struct TotalImpuesto{
-    pub codigo: u8,
+pub struct TotalConImpuestos {
+    #[serde(rename = "totalImpuesto")]
+    pub total_impuesto: Vec<TotalImpuesto>,
+}
+#[derive(Deserialize)]
+pub struct TotalImpuesto {
+    pub codigo: String,
     #[serde(rename = "codigoPorcentaje")]
     pub codigo_porcentaje: String,
     #[serde(rename = "descuentoAdicional", default)]
@@ -75,7 +84,67 @@ pub struct TotalImpuesto{
     pub valor: Decimal,
 }
 
+#[derive(Deserialize)]
+pub struct Pagos {
+    pub pago: Vec<Pago>,
+}
+#[derive(Deserialize)]
+pub struct Pago {
+    #[serde(rename = "formaPago")]
+    pub forma_pago: String,
+    pub total: Decimal,
+    pub plazo: u32,
+    #[serde(rename = "unidadTiempo")]
+    pub unidad_tiempo: String,
+}
 
+#[derive(Deserialize)]
+pub struct Detalles {
+    pub detalle: Vec<Detalle>,
+}
+
+#[derive(Deserialize)]
+pub struct Detalle {
+    #[serde(rename = "codigoPrincipal")]
+    pub codigo_principal: String,
+    #[serde(rename = "codigoAuxiliar")]
+    pub codigo_auxiliar: String,
+    pub descripcion: String,
+    pub cantidad: Decimal,
+    #[serde(rename = "precioUnitario")]
+    pub precio_unitario: Decimal,
+    pub descuento: Decimal,
+    #[serde(rename = "precioTotalSinImpuesto")]
+    pub precio_total_sin_impuestos: Decimal,
+    #[serde(rename = "detallesAdicionales")]
+    pub detalles_adicionales: Option<Vec<DetAdicionales>>,
+    pub impuestos: Impuestos,
+}
+
+#[derive(Deserialize)]
+#[serde(rename = "detAdicional")]
+pub struct DetAdicionales {
+    #[serde(rename = "@nombre")]
+    pub nombre: String,
+    #[serde(rename = "@valor")]
+    pub valor: String,
+}
+
+#[derive(Deserialize)]
+pub struct Impuestos {
+    pub impuesto: Vec<Impuesto>,
+}
+
+#[derive(Deserialize)]
+pub struct Impuesto {
+    pub codigo: String,
+    #[serde(rename = "codigoPorcentaje")]
+    pub codigo_porcentaje: String,
+    pub tarifa: Decimal,
+    #[serde(rename = "baseImponible")]
+    pub base_imponible: Decimal,
+    pub valor: Decimal,
+}
 
 impl Display for InfoTributaria {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -98,3 +167,4 @@ impl IntoIterator for Facturas {
         self.facturas.into_iter()
     }
 }
+
