@@ -61,6 +61,10 @@ async fn main() -> Result<(), anyhow::Error> {
     let cliente = Client::new();
 
     let consulta = cliente
+        /*
+        *Hay que tener cuidado con la consulta, porque imagino que el comprobante se consulta en uno si es Persona Natura
+        y en otro si es persona juridica
+        * */
         .post("https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline")
         .body(xml)
         .send()
