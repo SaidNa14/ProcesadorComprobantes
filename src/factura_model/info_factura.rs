@@ -34,7 +34,6 @@ pub struct InfoFactura {
     pub propina: Decimal,
     #[serde(rename = "importeTotal", with = "rust_decimal::serde::str")]
     pub importe_total: Decimal,
-    #[serde(default)]
     pub moneda: Option<String>,
     pub pagos: Pagos,
 }
@@ -64,7 +63,6 @@ pub struct TotalImpuesto {
     pub codigo_porcentaje: String,
     #[serde(
         rename = "descuentoAdicional",
-        default,
         with = "rust_decimal::serde::str_option"
     )]
     pub descuento_adicional: Option<Decimal>,

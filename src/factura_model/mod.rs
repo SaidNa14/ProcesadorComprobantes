@@ -19,7 +19,7 @@ pub struct Factura {
     pub info_factura: InfoFactura,
     pub detalles: Detalles,
     #[serde(rename = "infoAdicional")]
-    pub info_adicional: InfoAdicional,
+    pub info_adicional: Option<InfoAdicional>,
 }
 
 pub struct Facturas {

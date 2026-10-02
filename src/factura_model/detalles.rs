@@ -23,7 +23,7 @@ pub struct Detalle {
     pub descuento: Decimal,
     #[serde(rename = "precioTotalSinImpuesto", with = "rust_decimal::serde::str")]
     pub precio_total_sin_impuestos: Decimal,
-    #[serde(rename = "detallesAdicionales", default)]
+    #[serde(rename = "detallesAdicionales")]
     pub detalles_adicionales: Option<DetallesAdicionales>,
     pub impuestos: Impuestos,
 }
